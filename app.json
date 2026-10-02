@@ -30,6 +30,12 @@
     "plugins": [
       "expo-router",
       "expo-font"
-    ]
+    ],
+    "owner": "lengphan",
+    "extra": {
+      "eas": {
+        "projectId": "bdda544b-0e0d-46bc-96de-a0aa0fe75469"
+      }
+    }
   }
 }
