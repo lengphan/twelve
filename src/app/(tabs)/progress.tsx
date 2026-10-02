@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle, Line, Path, Text as SvgText } from 'react-native-svg';
 import { ChevronIcon } from '@/components/icons';
-import { Card, Label, Num, Tap, shared } from '@/components/ui';
+import { enter, Card, Label, Num, Tap, shared } from '@/components/ui';
 import { linearTrend } from '@/lib/review';
 import { programDay, useStore } from '@/store';
 import { colors, fonts } from '@/theme';
@@ -47,9 +47,9 @@ export default function Progress() {
           <Text style={shared.h1}>Progress</Text>
         </View>
 
-        <Animated.View entering={FadeInDown.springify().damping(20)}>
+        <Animated.View entering={enter()}>
           <Card style={{ borderRadius: 22, gap: 10 }}>
-            {!real && <Label style={{ fontSize: 11 }}>SAMPLE · YOUR DATA APPEARS AFTER YOUR FIRST CHECK-IN</Label>}
+            {!real && <Label style={{ fontSize: 11 }}>SAMPLE · YOURS AFTER 2 CHECK-INS</Label>}
             <View style={{ gap: 2 }}>
               <Text style={styles.muted13}>Weight trend</Text>
               <Num style={{ fontSize: 30, letterSpacing: -0.9 }}>
@@ -75,26 +75,24 @@ export default function Progress() {
               ))}
               <Path d={`M${x(0)} ${y(line[0])} L${x(line.length - 1)} ${y(latest)}`} stroke={colors.slate} strokeWidth={2.5} strokeLinecap="round" />
             </Svg>
-            <Text style={styles.caption}>Dots are weigh-ins. The line shows the real direction, so one heavy day never ruins your week.</Text>
           </Card>
         </Animated.View>
 
-        <Animated.View entering={FadeInDown.delay(60).springify().damping(20)} style={{ flexDirection: 'row', gap: 10 }}>
+        <Animated.View entering={enter(60)} style={{ flexDirection: 'row', gap: 10 }}>
           <Card dark style={{ flex: 1, gap: 10, padding: 14 }}>
-            <Text style={styles.onSlateMuted}>Workouts this week</Text>
+            <Text style={styles.onSlateMuted}>Workouts</Text>
             <Text style={styles.onSlateNum}>{profile ? `${doneThisWeek} / ${profile.daysPerWeek}` : '—'}</Text>
             <View style={styles.bars}>
               {Array.from({ length: profile?.daysPerWeek ?? 3 }).map((_, i) => (
                 <View key={i} style={{ flex: 1, height: 56, borderRadius: 4, backgroundColor: i < doneThisWeek ? colors.onSlate : colors.slateLine }} />
               ))}
             </View>
-            <Text style={styles.onSlateMuted}>Strength trends appear after 2 weeks</Text>
           </Card>
           <Card style={{ flex: 1, gap: 8, padding: 14 }}>
             <Text style={styles.muted12}>Waist</Text>
             <Num style={{ fontSize: 22 }}>{lastWaist ? `${lastWaist} cm` : '—'}</Num>
             <Text style={styles.body13}>
-              {firstWaist && lastWaist && firstWaist !== lastWaist ? `${lastWaist - firstWaist > 0 ? '+' : '−'}${Math.abs(lastWaist - firstWaist)} cm since start` : lastWaist ? 'Starting point' : 'Add at check-in'}
+              {firstWaist && lastWaist && firstWaist !== lastWaist ? `${lastWaist - firstWaist > 0 ? '+' : '−'}${Math.abs(lastWaist - firstWaist)} cm since start` : lastWaist ? 'Start' : 'Add at check-in'}
             </Text>
             <View style={{ height: 1, backgroundColor: colors.lineSoft }} />
             <Text style={styles.muted12}>Waist-to-height</Text>
@@ -108,7 +106,7 @@ export default function Progress() {
         <Tap onPress={() => router.push('/checkin')} haptic="select" style={styles.row} accessibilityLabel="Weekly check-in">
           <View style={{ flex: 1, gap: 3 }}>
             <Text style={styles.rowTitle}>Weekly check-in</Text>
-            <Text style={styles.body13}>Weigh in, measure, 3 quick questions · 2 minutes</Text>
+            <Text style={styles.body13}>2 minutes</Text>
           </View>
           <ChevronIcon />
         </Tap>

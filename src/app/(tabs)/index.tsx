@@ -1,9 +1,9 @@
 import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { CheckIcon, MoonIcon } from '@/components/icons';
-import { Bar, Card, Label, Num, Tap, shared } from '@/components/ui';
+import { CheckIcon } from '@/components/icons';
+import { enter, Bar, Card, Label, Num, Tap, shared } from '@/components/ui';
 import { macros, type LoggedItem } from '@/lib/foods';
 import { fmt } from '@/lib/plan';
 import { TODAY_WORKOUT } from '@/lib/workouts';
@@ -14,7 +14,7 @@ import { colors, fonts, radius } from '@/theme';
 const SUGGESTIONS: { name: string; desc: string; items: LoggedItem[] }[] = [
   {
     name: 'Salmon dinner',
-    desc: 'Salmon 180 g · baby potatoes 200 g · green beans 150 g · olive oil 5 g',
+    desc: 'Salmon, baby potatoes, green beans',
     items: [
       { foodId: 'salmon', grams: 180 },
       { foodId: 'potatoes', grams: 200 },
@@ -22,7 +22,7 @@ const SUGGESTIONS: { name: string; desc: string; items: LoggedItem[] }[] = [
       { foodId: 'oliveOil', grams: 5 },
     ],
   },
-  { name: 'Skyr snack', desc: 'Skyr 170 g · banana 100 g', items: [{ foodId: 'skyr', grams: 170 }, { foodId: 'banana', grams: 100 }] },
+  { name: 'Skyr snack', desc: 'Skyr and a banana', items: [{ foodId: 'skyr', grams: 170 }, { foodId: 'banana', grams: 100 }] },
 ];
 
 export default function Today() {
@@ -44,17 +44,17 @@ export default function Today() {
         <View style={styles.header}>
           <View style={{ gap: 2 }}>
             <Label>
-              WEEK {week} / 12 · DAY {dayNum}
+              WEEK {week} OF 12 · DAY {dayNum}
             </Label>
             <Text style={shared.h1}>{day}</Text>
           </View>
         </View>
 
-        <Animated.View entering={FadeInDown.springify().damping(20)}>
+        <Animated.View entering={enter()}>
           <Card dark style={styles.hero}>
             <View style={styles.between}>
               <Text style={styles.heroMuted}>Protein</Text>
-              <Text style={styles.heroMono}>{left > 0 ? `${left} g to go` : 'Target hit'}</Text>
+              <Text style={styles.heroMono}>{left > 0 ? `${left} g to go` : 'Done ✓'}</Text>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 6 }}>
               <Num style={styles.big}>{protein}</Num>
@@ -69,44 +69,27 @@ export default function Today() {
           </Card>
         </Animated.View>
 
-        <View style={shared.note}>
-          <MoonIcon />
-          <Text style={shared.noteText}>Connect Apple Health in Settings so workouts adjust to your sleep and steps.</Text>
-        </View>
-
-        <Animated.View entering={FadeInDown.delay(60).springify().damping(20)}>
+        <Animated.View entering={enter(60)}>
           <Tap onPress={() => router.push('/workout')} style={styles.workout}>
             <View style={styles.between}>
               <View style={{ gap: 3 }}>
-                <Label style={{ fontSize: 11 }}>WORKOUT · {w.minutes} MIN</Label>
+                <Label style={{ fontSize: 11 }}>TODAY · {w.minutes} MIN</Label>
                 <Text style={styles.cardTitle}>{w.name}</Text>
               </View>
               <View style={styles.startPill}>
                 <Text style={styles.startText}>Start</Text>
               </View>
             </View>
-            <View style={{ gap: 6 }}>
-              {w.exercises.slice(0, 2).map((e) => (
-                <View key={e.id} style={styles.between}>
-                  <Text style={styles.rowText}>{e.name}</Text>
-                  <Text style={styles.rowMono}>
-                    {e.sets} × {e.reps} · {e.load}
-                  </Text>
-                </View>
-              ))}
-              <View style={styles.between}>
-                <Text style={[styles.rowText, { color: colors.muted }]}>+ {w.exercises.length - 2} more</Text>
-              </View>
-            </View>
+            <Text style={styles.rowMono}>{w.exercises.length} moves · {w.exercises.reduce((n, e) => n + e.sets, 0)} sets</Text>
           </Tap>
         </Animated.View>
 
         <View style={[styles.between, { paddingTop: 2, alignItems: 'baseline' }]}>
           <Text style={styles.h2}>Meals</Text>
-          <Text style={styles.small}>{mealsToday.length} logged today</Text>
+          <Text style={styles.small}>{mealsToday.length} logged</Text>
         </View>
 
-        <Animated.View entering={FadeInDown.delay(120).springify().damping(20)} style={styles.meals}>
+        <Animated.View entering={enter(120)} style={styles.meals}>
           {mealsToday.length > 0 && (
             <View style={[styles.mealRow, { borderBottomWidth: 1, borderBottomColor: colors.lineSoft }]}>
               <View style={styles.check}>
@@ -123,7 +106,7 @@ export default function Today() {
           {next && nextMacros ? (
             <View style={{ padding: 14, gap: 8 }}>
               <View style={[styles.between, { alignItems: 'baseline' }]}>
-                <Text style={styles.mealTitle}>Next — suggested</Text>
+                <Text style={styles.mealTitle}>Up next</Text>
                 <Text style={[styles.rowMono, { color: colors.slate }]}>
                   {nextMacros.protein} g · {fmt(nextMacros.kcal)} kcal
                 </Text>
@@ -131,16 +114,16 @@ export default function Today() {
               <Text style={styles.mealDesc}>{next.desc}</Text>
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 <Tap onPress={() => logMeal(next.name, next.items)} haptic="success" style={[styles.pill, { borderColor: colors.slate }]}>
-                  <Text style={styles.pillText}>I ate this</Text>
+                  <Text style={styles.pillText}>Ate it</Text>
                 </Tap>
                 <Tap onPress={() => router.push('/log')} haptic="select" style={[styles.pill, { borderColor: colors.line }]}>
-                  <Text style={[styles.pillText, { fontFamily: fonts.regular, color: colors.slateMid }]}>Log something else</Text>
+                  <Text style={[styles.pillText, { fontFamily: fonts.regular, color: colors.slateMid }]}>Something else</Text>
                 </Tap>
               </View>
             </View>
           ) : (
             <View style={{ padding: 14 }}>
-              <Text style={styles.mealDesc}>{left > 0 ? 'Log what you eat with the + button.' : 'Protein target hit for today. Nice work.'}</Text>
+              <Text style={styles.mealDesc}>{left > 0 ? 'Tap + to log a meal.' : 'Protein done. Crushed it.'}</Text>
             </View>
           )}
         </Animated.View>

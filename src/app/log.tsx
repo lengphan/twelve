@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import Animated, { FadeIn, FadeInDown, LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraIcon, CloseIcon } from '@/components/icons';
-import { Button, Tap, shared } from '@/components/ui';
+import { Button, Tap, enter, shared } from '@/components/ui';
 import { analyzeMeal } from '@/lib/ai';
 import { FOODS, QUICK_ADDS, macros, type LoggedItem } from '@/lib/foods';
 import { fmt } from '@/lib/plan';
@@ -58,7 +58,7 @@ export default function LogMeal() {
 
       <ScrollView contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
         <View style={{ gap: 8 }}>
-          <Text style={styles.small}>Quick add · one tap</Text>
+          <Text style={styles.small}>One tap</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
             {QUICK_ADDS.map((q) => (
               <Tap key={q.label} onPress={() => quickAdd(q.label, q.items)} haptic="success" style={styles.chip}>
@@ -77,12 +77,12 @@ export default function LogMeal() {
         </View>
 
         {!items && (
-          <Animated.View key={mode} entering={FadeIn.duration(180)} style={{ gap: 12 }}>
+          <Animated.View key={mode} entering={enter()} style={{ gap: 12 }}>
             {mode === 'text' ? (
               <TextInput
                 value={text}
                 onChangeText={setText}
-                placeholder="e.g. salmon, potatoes and green beans"
+                placeholder="Salmon, potatoes, green beans"
                 placeholderTextColor="#9AA1A8"
                 style={styles.input}
                 accessibilityLabel="What did you eat?"
@@ -91,24 +91,24 @@ export default function LogMeal() {
             ) : (
               <Tap onPress={analyze} style={styles.capture} accessibilityLabel={mode === 'photo' ? 'Take a photo of your meal' : 'Hold to describe your meal'}>
                 <CameraIcon />
-                <Text style={styles.captureText}>{mode === 'photo' ? 'Tap to take a photo' : 'Tap and say what you ate'}</Text>
+                <Text style={styles.captureText}>{mode === 'photo' ? 'Snap your plate' : 'Tap and talk'}</Text>
               </Tap>
             )}
-            {mode === 'text' && <Button label="Find my meal" onPress={analyze} disabled={!text.trim()} />}
+            {mode === 'text' && <Button label="Find it" onPress={analyze} disabled={!text.trim()} />}
             {busy && (
               <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center' }}>
                 <ActivityIndicator color={colors.slate} />
-                <Text style={styles.small}>Reading your meal…</Text>
+                <Text style={styles.small}>Reading your plate…</Text>
               </View>
             )}
           </Animated.View>
         )}
 
         {items && (
-          <Animated.View entering={FadeInDown.springify().damping(20)} layout={LinearTransition} style={{ gap: 12 }}>
+          <Animated.View entering={enter()} style={{ gap: 12 }}>
             <View style={styles.between}>
-              <Text style={styles.h2}>We found {items.length} items</Text>
-              <Text style={styles.small}>Protein · calories · tap ± to adjust</Text>
+              <Text style={styles.h2}>Found {items.length}</Text>
+              <Text style={styles.small}>Tap ± to adjust</Text>
             </View>
             <View style={styles.list}>
               {items.map((it, i) => {
@@ -143,8 +143,8 @@ export default function LogMeal() {
               {plan && (
                 <Text style={styles.sumText}>
                   {left > 0
-                    ? `After this: ${before + total.protein} of ${plan.proteinG} g protein today. ${left} g to go.`
-                    : 'After this you hit your protein target for today.'}
+                    ? `${left} g protein left today.`
+                    : 'This hits your protein. Nice.'}
                 </Text>
               )}
             </View>
@@ -155,7 +155,7 @@ export default function LogMeal() {
       {items && (
         <View style={styles.footer}>
           <Button
-            label="Looks right — log it"
+            label="Log it"
             haptic="success"
             onPress={() => {
               logMeal(mode === 'photo' ? 'Photo meal' : 'Meal', items);

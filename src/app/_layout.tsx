@@ -22,13 +22,13 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.ivory }}>
       <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.ivory }, animation: 'slide_from_right' }}>
+      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.ivory }, animation: 'default' }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="onboarding" options={{ animation: 'fade' }} />
-        <Stack.Screen name="paywall" options={{ animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="log" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="workout" options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
-        <Stack.Screen name="checkin" options={{ presentation: 'modal', animation: 'slide_from_bottom' }} />
+        <Stack.Screen name="paywall" options={{ animation: 'fade' }} />
+        <Stack.Screen name="log" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="workout" options={{ presentation: 'fullScreenModal' }} />
+        <Stack.Screen name="checkin" options={{ presentation: 'modal' }} />
       </Stack>
     </GestureHandlerRootView>
   );

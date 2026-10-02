@@ -1,18 +1,18 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import Animated, { FadeInRight, FadeOutLeft, LinearTransition } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button, Card, Label, Num, Option, Tap, shared } from '@/components/ui';
+import { Button, enter, Card, Label, Num, Option, Tap, shared } from '@/components/ui';
 import { BackIcon } from '@/components/icons';
 import { buildPlan, fmt, type Activity, type Diet, type Goal, type Place, type Profile, type Sex } from '@/lib/plan';
 import { useStore } from '@/store';
 import { colors, fonts, radius } from '@/theme';
 
 const GOALS: { id: Goal; t: string; d: string }[] = [
-  { id: 'recomp', t: 'Lose fat, keep muscle', d: 'The classic transformation' },
-  { id: 'muscle', t: 'Build muscle', d: 'Get stronger and bigger' },
-  { id: 'fit', t: 'Get fitter overall', d: 'Energy, stamina, better habits' },
+  { id: 'recomp', t: 'Get lean', d: 'Lose fat, keep muscle' },
+  { id: 'muscle', t: 'Get strong', d: 'Build real muscle' },
+  { id: 'fit', t: 'Get fit', d: 'More energy, every day' },
 ];
 
 export default function Onboarding() {
@@ -68,17 +68,17 @@ export default function Onboarding() {
               </View>
               <View style={shared.segments}>
                 {[1, 2, 3, 4].map((i) => (
-                  <Animated.View key={i} layout={LinearTransition} style={[shared.segment, { backgroundColor: i <= step ? colors.slate : '#DDD8CC' }]} />
+                  <View key={i} style={[shared.segment, { backgroundColor: i <= step ? colors.slate : '#DDD8CC' }]} />
                 ))}
               </View>
             </View>
           )}
 
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-            <Animated.View key={step} entering={FadeInRight.springify().damping(20)} exiting={FadeOutLeft.duration(150)} style={styles.body}>
+            <Animated.View key={step} entering={enter()} style={styles.body}>
               {step === 1 && (
                 <>
-                  <Title title="What do you want in 12 weeks?" lead="Pick one. Your meals and workouts are built around it." />
+                  <Title title="What's your 12-week win?" />
                   <View style={{ gap: 10 }}>
                     {GOALS.map((g) => (
                       <Option key={g.id} label={g.t} detail={g.d} selected={goal === g.id} onPress={() => setGoal(g.id)} />
@@ -89,7 +89,7 @@ export default function Onboarding() {
 
               {step === 2 && (
                 <>
-                  <Title title="About you" lead="Used to calculate exact calories and protein." />
+                  <Title title="The basics" lead="For your exact numbers." />
                   <View style={styles.grid2}>
                     <Field label="Height (cm)" value={height} onChange={setHeight} numeric />
                     <Field label="Weight (kg)" value={weight} onChange={setWeight} numeric />
@@ -102,12 +102,12 @@ export default function Onboarding() {
                       </View>
                     </View>
                   </View>
-                  <Field label="Waist at belly button (cm) · optional" value={waist} onChange={setWaist} numeric placeholder="e.g. 89" />
+                  <Field label="Waist (cm) · optional" value={waist} onChange={setWaist} numeric placeholder="e.g. 89" />
                   <View style={{ gap: 8 }}>
-                    <Text style={styles.fieldLabel}>Daily activity outside workouts</Text>
+                    <Text style={styles.fieldLabel}>Your day</Text>
                     <View style={{ flexDirection: 'row', gap: 8 }}>
                       {(['desk', 'feet', 'physical'] as Activity[]).map((a) => (
-                        <Option key={a} label={a === 'desk' ? 'Desk' : a === 'feet' ? 'On feet' : 'Physical'} selected={activity === a} onPress={() => setActivity(a)} style={styles.flex1Center} />
+                        <Option key={a} label={a === 'desk' ? 'Desk' : a === 'feet' ? 'On feet' : 'Active'} selected={activity === a} onPress={() => setActivity(a)} style={styles.flex1Center} />
                       ))}
                     </View>
                   </View>
@@ -116,9 +116,9 @@ export default function Onboarding() {
 
               {step === 3 && (
                 <>
-                  <Title title="How will you train?" lead="Workouts adapt to your equipment and schedule." />
+                  <Title title="How will you train?" />
                   <View style={{ gap: 8 }}>
-                    <Text style={styles.fieldLabel}>Days per week</Text>
+                    <Text style={styles.fieldLabel}>Days a week</Text>
                     <View style={{ flexDirection: 'row', gap: 8 }}>
                       {[2, 3, 4, 5].map((d) => (
                         <Option key={d} label={String(d)} mono selected={days === d} onPress={() => setDays(d)} style={styles.flex1Center} />
@@ -142,13 +142,13 @@ export default function Onboarding() {
 
               {step === 4 && (
                 <>
-                  <Title title="How do you eat?" lead="Meal plans use foods you actually like." />
+                  <Title title="How do you eat?" />
                   <View style={{ gap: 8 }}>
                     <Text style={styles.fieldLabel}>Diet</Text>
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                       {(
                         [
-                          ['any', 'No preference'],
+                          ['any', 'Anything'],
                           ['vegetarian', 'Vegetarian'],
                           ['pescatarian', 'Pescatarian'],
                           ['vegan', 'Vegan'],
@@ -158,9 +158,9 @@ export default function Onboarding() {
                       ))}
                     </View>
                   </View>
-                  <Field label="Foods to avoid" value={avoid} onChange={setAvoid} placeholder="e.g. mushrooms, tofu" />
+                  <Field label="Skip these" value={avoid} onChange={setAvoid} placeholder="e.g. mushrooms, tofu" />
                   <View style={{ gap: 8 }}>
-                    <Text style={styles.fieldLabel}>Meals per day</Text>
+                    <Text style={styles.fieldLabel}>Meals a day</Text>
                     <View style={{ flexDirection: 'row', gap: 8 }}>
                       {[3, 4, 5].map((m) => (
                         <Option key={m} label={String(m)} mono selected={meals === m} onPress={() => setMeals(m)} style={styles.flex1Center} />
@@ -172,41 +172,42 @@ export default function Onboarding() {
 
               {step === 5 && (
                 <View style={{ gap: 14, paddingTop: 8 }}>
-                  <Label>YOUR PLAN IS READY</Label>
-                  <Text style={shared.h1}>12 weeks to {goal === 'muscle' ? 'build muscle.' : goal === 'fit' ? 'get fitter.' : 'lose fat and keep your muscle.'}</Text>
+                  <Label>YOUR PLAN</Label>
+                  <Text style={shared.h1}>{goal === 'muscle' ? 'Stronger in 12 weeks.' : goal === 'fit' ? 'Fitter in 12 weeks.' : 'Leaner in 12 weeks.'}</Text>
                   <Card dark style={{ paddingVertical: 6, paddingHorizontal: 18, borderRadius: radius.xl }}>
-                    <Row k="Calories / day" v={`${fmt(plan.calories)} kcal`} />
-                    <Row k="Protein / day" v={`${plan.proteinG} g`} />
+                    <Row k="Calories a day" v={`${fmt(plan.calories)} kcal`} />
+                    <Row k="Protein a day" v={`${plan.proteinG} g`} />
                     <Row k="Workouts" v={`${days} × ${plan.workoutMinutes} min`} />
-                    <Row k="Expected pace" v={goal === 'recomp' ? `−${plan.paceKgPerWeek[0]} to −${plan.paceKgPerWeek[1]} kg / wk` : `+${plan.paceKgPerWeek[0]} to +${plan.paceKgPerWeek[1]} kg / wk`} last />
+                    <Row k="Pace" v={goal === 'recomp' ? `−${plan.paceKgPerWeek[0]} to −${plan.paceKgPerWeek[1]} kg / wk` : `+${plan.paceKgPerWeek[0]} to +${plan.paceKgPerWeek[1]} kg / wk`} last />
                   </Card>
                   <Card style={{ gap: 10 }}>
-                    <Label style={{ fontSize: 11 }}>YOUR STARTING POINT</Label>
+                    <Label style={{ fontSize: 11 }}>DAY 1</Label>
                     <View style={{ flexDirection: 'row' }}>
-                      <View style={{ flex: 1, gap: 3 }}>
-                        <Text style={styles.small}>Waist-to-height</Text>
-                        <Num style={{ fontSize: 20 }}>{plan.waistToHeight ?? '—'}</Num>
-                        <Text style={styles.smallDark}>{plan.waistToHeight ? 'Aim: under 0.50' : 'Add waist to see'}</Text>
-                      </View>
+                      {plan.waistToHeight ? (
+                        <View style={{ flex: 1, gap: 3 }}>
+                          <Text style={styles.small}>Waist-to-height</Text>
+                          <Num style={{ fontSize: 20 }}>{plan.waistToHeight.toFixed(2)}</Num>
+                          <Text style={styles.smallDark}>Goal: under 0.50</Text>
+                        </View>
+                      ) : null}
                       <View style={{ flex: 1, gap: 3 }}>
                         <Text style={styles.small}>BMI</Text>
                         <Num style={{ fontSize: 20 }}>{plan.bmi.toFixed(1)}</Num>
-                        <Text style={styles.smallDark}>Rough guide only</Text>
+                        <Text style={styles.smallDark}>Rough guide</Text>
                       </View>
                     </View>
-                    <Text style={[styles.small, { lineHeight: 17 }]}>BMI can't tell muscle from fat, so we track waist and strength to show real progress.</Text>
                   </Card>
-                  <Text style={[styles.small, { lineHeight: 18 }]}>Targets update every Sunday from your check-in. General fitness guidance, not medical advice.</Text>
+                  <Text style={[styles.small, { lineHeight: 18 }]}>Adjusts every Sunday. Not medical advice.</Text>
                 </View>
               )}
             </Animated.View>
           </ScrollView>
 
           {step < 5 ? (
-            <Button label={step === 4 ? 'Build my plan' : 'Continue'} onPress={next} />
+            <Button label={step === 4 ? 'Build my plan' : 'Next'} onPress={next} />
           ) : (
             <Button
-              label="Continue"
+              label="Let's go"
               haptic="success"
               onPress={() => {
                 finish(profile);
@@ -220,11 +221,11 @@ export default function Onboarding() {
   );
 }
 
-function Title({ title, lead }: { title: string; lead: string }) {
+function Title({ title, lead }: { title: string; lead?: string }) {
   return (
     <View style={{ gap: 6 }}>
       <Text style={shared.h1}>{title}</Text>
-      <Text style={shared.lead}>{lead}</Text>
+      {lead ? <Text style={shared.lead}>{lead}</Text> : null}
     </View>
   );
 }

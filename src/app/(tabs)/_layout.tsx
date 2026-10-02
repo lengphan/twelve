@@ -15,7 +15,7 @@ export default function TabsLayout() {
   if (!hasPlan) return <Redirect href="/onboarding" />;
 
   return (
-    <Tabs screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.ivory }, animation: 'shift' }} tabBar={(p) => <TabBar {...p} />}>
+    <Tabs screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: colors.ivory }, animation: 'fade' }} tabBar={(p) => <TabBar {...p} />}>
       <Tabs.Screen name="index" options={{ title: 'Today' }} />
       <Tabs.Screen name="progress" options={{ title: 'Progress' }} />
     </Tabs>

@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import Animated, { FadeInRight, FadeOutLeft } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CloseIcon } from '@/components/icons';
-import { Button, Card, Label, Num, Option, Tap, shared } from '@/components/ui';
+import { Button, enter, Card, Label, Num, Option, Tap, shared } from '@/components/ui';
 import { fmt } from '@/lib/plan';
 import { weeklyReview, type Review } from '@/lib/review';
 import { useStore, type CheckIn, type Feeling } from '@/store';
@@ -60,7 +60,7 @@ export default function CheckInScreen() {
             <Tap onPress={() => router.back()} accessibilityLabel="Close" style={shared.iconBtn}>
               <CloseIcon />
             </Tap>
-            <Label>{step < 4 ? `CHECK-IN · STEP ${step} OF 3` : 'WEEKLY REVIEW'}</Label>
+            <Label>{step < 4 ? `CHECK-IN · ${step} OF 3` : 'YOUR WEEK'}</Label>
             <View style={{ width: 44 }} />
           </View>
           {step < 4 && (
@@ -72,12 +72,12 @@ export default function CheckInScreen() {
           )}
 
           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-            <Animated.View key={step} entering={FadeInRight.springify().damping(20)} exiting={FadeOutLeft.duration(150)} style={{ gap: 18, paddingTop: 4 }}>
+            <Animated.View key={step} entering={enter()} style={{ gap: 18, paddingTop: 4 }}>
               {step === 1 && (
                 <>
                   <View style={{ gap: 6 }}>
                     <Text style={shared.h1}>Weigh in</Text>
-                    <Text style={shared.lead}>Morning, after the bathroom, before eating.</Text>
+                    <Text style={shared.lead}>Morning, before breakfast.</Text>
                   </View>
                   <View style={{ gap: 6 }}>
                     <Text style={styles.fieldLabel}>Weight (kg)</Text>
@@ -85,7 +85,7 @@ export default function CheckInScreen() {
                   </View>
                   {last && (
                     <View style={styles.lastRow}>
-                      <Text style={styles.lastText}>Last check-in</Text>
+                      <Text style={styles.lastText}>Last time</Text>
                       <Num style={{ fontSize: 14 }}>{last.weightKg} kg</Num>
                     </View>
                   )}
@@ -94,8 +94,8 @@ export default function CheckInScreen() {
               {step === 2 && (
                 <>
                   <View style={{ gap: 6 }}>
-                    <Text style={shared.h1}>Measure your waist</Text>
-                    <Text style={shared.lead}>At the belly button, relaxed. It shows fat loss the scale can miss.</Text>
+                    <Text style={shared.h1}>Waist</Text>
+                    <Text style={shared.lead}>Catches fat loss the scale misses.</Text>
                   </View>
                   <View style={{ gap: 6 }}>
                     <Text style={styles.fieldLabel}>Waist (cm) · optional</Text>
@@ -106,8 +106,7 @@ export default function CheckInScreen() {
               {step === 3 && (
                 <>
                   <View style={{ gap: 6 }}>
-                    <Text style={shared.h1}>How was the week?</Text>
-                    <Text style={shared.lead}>Honest answers make next week's plan better.</Text>
+                    <Text style={shared.h1}>How was your week?</Text>
                   </View>
                   {QUESTIONS.map((q) => (
                     <View key={q.key} style={{ gap: 8 }}>
@@ -123,16 +122,16 @@ export default function CheckInScreen() {
               )}
               {step === 4 && review && result && plan && (
                 <>
-                  <Text style={shared.h1}>{review.calDelta === 0 && review.stepsDelta === 0 ? 'On track.' : 'One small change for next week.'}</Text>
+                  <Text style={shared.h1}>{review.calDelta === 0 && review.stepsDelta === 0 ? 'On track. Keep going.' : 'One tweak for next week.'}</Text>
                   <View style={{ flexDirection: 'row', gap: 8 }}>
                     <Delta k="Weight" v={signed(review.weightDelta)} unit="kg" />
                     <Delta k="Waist" v={review.waistDelta !== undefined ? signed(review.waistDelta) : '—'} unit={review.waistDelta !== undefined ? 'cm' : ''} />
                   </View>
                   <Card dark style={{ borderRadius: 22, gap: 12, paddingHorizontal: 18 }}>
-                    <Label style={{ color: colors.onSlateMuted }}>WHAT CHANGES NEXT WEEK</Label>
-                    <Line k="Calories" v={result.cal[0] === result.cal[1] ? `${fmt(result.cal[0])} · no change` : `${fmt(result.cal[0])} → ${fmt(result.cal[1])}`} />
-                    <Line k="Protein" v={`${plan.proteinG} g · no change`} />
-                    <Line k="Steps" v={result.steps[0] === result.steps[1] ? `${fmt(result.steps[0])} · no change` : `${fmt(result.steps[0])} → ${fmt(result.steps[1])}`} />
+                    <Label style={{ color: colors.onSlateMuted }}>NEXT WEEK</Label>
+                    <Line k="Calories" v={result.cal[0] === result.cal[1] ? fmt(result.cal[0]) : `${fmt(result.cal[0])} → ${fmt(result.cal[1])}`} />
+                    <Line k="Protein" v={`${plan.proteinG} g`} />
+                    <Line k="Steps" v={result.steps[0] === result.steps[1] ? fmt(result.steps[0]) : `${fmt(result.steps[0])} → ${fmt(result.steps[1])}`} />
                     <Text style={styles.reviewText}>{review.message}</Text>
                   </Card>
                 </>
@@ -140,8 +139,8 @@ export default function CheckInScreen() {
             </Animated.View>
           </ScrollView>
 
-          {step < 3 && <Button label="Continue" onPress={() => setStep(step + 1)} disabled={step === 1 && !Number(weight.replace(',', '.'))} />}
-          {step === 3 && <Button label="See my review" onPress={finish} haptic="success" />}
+          {step < 3 && <Button label="Next" onPress={() => setStep(step + 1)} disabled={step === 1 && !Number(weight.replace(',', '.'))} />}
+          {step === 3 && <Button label="See my week" onPress={finish} haptic="success" />}
           {step === 4 && <Button label="Done" onPress={() => router.back()} />}
         </View>
       </KeyboardAvoidingView>

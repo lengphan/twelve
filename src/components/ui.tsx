@@ -1,10 +1,16 @@
 import * as Haptics from 'expo-haptics';
 import { useEffect, type ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, { FadeIn, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { colors, fonts, radius, spring } from '@/theme';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+/**
+ * The app's ONE entrance: a short fade. No bounce, never sideways.
+ * Used for new steps and cards. Old content simply leaves, so two things never move at once.
+ */
+export const enter = (delay = 0) => FadeIn.duration(220).delay(delay);
 
 /** Every tappable thing: springs down on press, light haptic tick. */
 export function Tap({

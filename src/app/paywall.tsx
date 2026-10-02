@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Animated, { LinearTransition } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackIcon } from '@/components/icons';
 import { Button, Tap, shared } from '@/components/ui';
@@ -15,19 +14,19 @@ export default function Paywall() {
   const plusPrice = yearly ? '$79.99/yr' : '$14.99/mo';
 
   const tiers: { id: Tier; name: string; price: string; desc: string; tag?: string }[] = [
-    { id: 'free', name: 'Free', price: '$0', desc: 'Photo, voice and text logging · daily calorie and protein targets.' },
-    { id: 'plus', name: 'Plus', price: plusPrice, desc: 'Your exact plan: meals in grams, workouts with sets and weights, weekly adjustments.', tag: yearly ? '7 DAYS FREE · SAVE 55%' : '7 DAYS FREE' },
-    { id: 'transformation', name: '12-week Transformation', price: '$149 once', desc: 'Everything in Plus, plus phased program, weekly AI review, meal prep plans and a before-and-after report.', tag: 'ONE PAYMENT · NO RENEWAL' },
+    { id: 'free', name: 'Free', price: '$0', desc: 'Log meals. See your targets.' },
+    { id: 'plus', name: 'Plus', price: plusPrice, desc: 'Exact meals, workouts and weekly tweaks.', tag: yearly ? '7 DAYS FREE · SAVE 55%' : '7 DAYS FREE' },
+    { id: 'transformation', name: '12-week Transformation', price: '$149 once', desc: 'All of Plus, a phased program and your before/after.', tag: 'PAY ONCE' },
   ];
 
-  let cta = 'Continue with Free';
-  let fine = 'You can upgrade any time.';
+  let cta = 'Start free';
+  let fine = 'Upgrade anytime.';
   if (tier === 'plus') {
-    cta = `Start 7 days free, then ${plusPrice}`;
-    fine = 'Cancel in one tap in Settings. We remind you 2 days before the trial ends.';
+    cta = 'Try 7 days free';
+    fine = `Then ${plusPrice}. Cancel anytime, we remind you first.`;
   } else if (tier === 'transformation') {
-    cta = 'Start my 12 weeks · $149';
-    fine = 'One payment for 12 weeks. Nothing renews automatically.';
+    cta = 'Start my 12 weeks';
+    fine = '$149 once. Never renews.';
   }
 
   const go = () => {
@@ -49,8 +48,8 @@ export default function Paywall() {
         </View>
 
         <View style={{ gap: 6 }}>
-          <Text style={shared.h1}>How do you want to follow your plan?</Text>
-          <Text style={shared.lead}>Logging is always free. No ads on any plan.</Text>
+          <Text style={shared.h1}>Go all in.</Text>
+          <Text style={shared.lead}>Logging stays free. No ads, ever.</Text>
         </View>
 
         <View style={shared.segmented}>
@@ -66,7 +65,7 @@ export default function Paywall() {
             const on = tier === t.id;
             return (
               <Tap key={t.id} onPress={() => pick(t.id)} haptic="select" style={[styles.tier, on ? styles.tierOn : styles.tierOff]}>
-                <Animated.View layout={LinearTransition.springify()} style={{ gap: 8 }}>
+                <View style={{ gap: 8 }}>
                   <View style={styles.tierHead}>
                     <Text style={[styles.tierName, { color: on ? colors.onSlate : colors.slate }]}>{t.name}</Text>
                     <Text style={[styles.tierPrice, { color: on ? colors.onSlate : colors.slate }]}>{t.price}</Text>
@@ -75,7 +74,7 @@ export default function Paywall() {
                   {t.tag ? (
                     <Text style={[styles.tag, { backgroundColor: on ? colors.slateLine : colors.sunken, color: on ? colors.onSlate : colors.slateMid }]}>{t.tag}</Text>
                   ) : null}
-                </Animated.View>
+                </View>
               </Tap>
             );
           })}

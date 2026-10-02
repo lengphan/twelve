@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeInRight, FadeOutLeft } from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CloseIcon, UpIcon } from '@/components/icons';
-import { Button, Tap, shared } from '@/components/ui';
+import { Button, enter, Tap, shared } from '@/components/ui';
 import { TODAY_WORKOUT } from '@/lib/workouts';
 import { useStore } from '@/store';
 import { colors, fonts, radius } from '@/theme';
@@ -45,9 +45,9 @@ export default function WorkoutScreen() {
         </View>
 
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ gap: 14 }} showsVerticalScrollIndicator={false}>
-          <Animated.View key={ex.id} entering={FadeInRight.springify().damping(20)} exiting={FadeOutLeft.duration(150)} style={{ gap: 14 }}>
+          <Animated.View key={ex.id} entering={enter()} style={{ gap: 14 }}>
             <View style={styles.video}>
-              <Text style={styles.videoText}>Form demo video</Text>
+              <Text style={styles.videoText}>Form video</Text>
             </View>
             <View style={{ gap: 4 }}>
               <Text style={styles.exTitle}>{ex.name}</Text>
@@ -74,7 +74,7 @@ export default function WorkoutScreen() {
                   <Text style={[styles.setLoad, { color: d ? colors.onSlate : colors.slate }]}>
                     {ex.reps} × {ex.load}
                   </Text>
-                  <Text style={[styles.setLabel, { color: d ? colors.onSlate : colors.slate }]}>{d ? 'Done' : 'Tap when done'}</Text>
+                  <Text style={[styles.setLabel, { color: d ? colors.onSlate : colors.slate }]}>{d ? 'Done' : ''}</Text>
                 </Tap>
               ))}
             </View>
@@ -83,7 +83,7 @@ export default function WorkoutScreen() {
 
         {allDone ? (
           <Button
-            label={isLast ? 'Finish workout' : `Next: ${w.exercises[index + 1].name}`}
+            label={isLast ? 'Finish strong' : `Next: ${w.exercises[index + 1].name}`}
             haptic="success"
             onPress={() => {
               if (isLast) {
@@ -94,7 +94,7 @@ export default function WorkoutScreen() {
           />
         ) : (
           <View style={styles.rest}>
-            <Text style={styles.restText}>{count > 0 ? `Rest ${ex.restSec} s · then set ${count + 1}` : 'Start set 1 when ready'}</Text>
+            <Text style={styles.restText}>{count > 0 ? `Rest ${ex.restSec} s · then set ${count + 1}` : 'Set 1. You got this.'}</Text>
           </View>
         )}
       </View>

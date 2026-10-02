@@ -22,31 +22,31 @@ export function weeklyReview(prev: CheckIn, now: CheckIn, plan: Plan, goal: Goal
 
   let calDelta = 0;
   let stepsDelta = 0;
-  let message = 'Right on pace. Keep everything the same.';
+  let message = 'Right on pace. Change nothing.';
 
   if (goal === 'recomp' || goal === 'fit') {
     const loss = -perWeek;
     if (loss < lo * 0.5) {
       if (now.hunger === 'high' || now.energy === 'low') {
         stepsDelta = 500;
-        message = 'Weight is moving slowly, but you felt hungry or tired, so we add steps instead of cutting food.';
+        message = 'Slow week, but you were hungry or tired. More steps, same food.';
       } else {
         calDelta = -100;
-        message = 'Weight is moving slower than planned. A small 100 kcal trim gets you back on pace.';
+        message = 'A bit slow. Trimming 100 kcal.';
       }
     } else if (loss > hi * 1.2) {
       calDelta = 100;
-      message = 'You are losing faster than planned. We add 100 kcal to protect your muscle and energy.';
+      message = 'Dropping fast. Adding 100 kcal to protect muscle.';
     } else if (waistDelta !== undefined && waistDelta < 0) {
-      message = 'Waist down while staying on pace — that is fat, not muscle. Keep going.';
+      message = 'Waist down, on pace. That\'s fat leaving.';
     }
   } else {
     if (perWeek < lo * 0.5) {
       calDelta = 100;
-      message = 'Gaining slower than planned. Adding 100 kcal to support muscle growth.';
+      message = 'Gaining slowly. Adding 100 kcal.';
     } else if (perWeek > hi * 1.5) {
       calDelta = -100;
-      message = 'Gaining a little fast. Trimming 100 kcal to keep it lean.';
+      message = 'Gaining fast. Trimming 100 kcal.';
     }
   }
 
